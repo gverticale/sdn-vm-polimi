@@ -11,7 +11,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
  config.vm.hostname = "polimi-sdn"
 
  # onos gui
- # config.vm.network "forwarded_port", guest:8181, host:8181
+ config.vm.network "forwarded_port", guest:8181, host:8181
 
  # ryu gui
  config.vm.network "forwarded_port", guest:8080, host:8080 
@@ -23,8 +23,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
    
  config.vm.provision "shell", path: "setup/basic-setup.sh"
  config.vm.provision "shell", privileged: false, path: "setup/mininet-setup.sh"
- # config.vm.provision "shell", privileged: false, path: "setup/ryu-setup.sh"
+ config.vm.provision "shell", privileged: false, path: "setup/ryu-setup.sh"
  # config.vm.provision "shell", privileged: false, path: "setup/onos-setup.sh", env: {"ONOS_VERSION" => "1.12.0"}
+ # config.vm.provision "shell", privileged: false, path: "setup/onosdocker-setup.sh"
 
  # x11 not necessary
  # change to true if x11 is available
