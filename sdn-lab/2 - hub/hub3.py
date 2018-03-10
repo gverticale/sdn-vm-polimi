@@ -4,11 +4,9 @@ from ryu.controller.handler import CONFIG_DISPATCHER, MAIN_DISPATCHER
 from ryu.controller.handler import set_ev_cls
 from ryu.ofproto import ofproto_v1_3
 
-# This hub implementation sends all the packets to the controller
-# The controller echoes the packets with a packet out message
+# This hub implementation sends packet headers to the controller
+# The controller echoes with a packet out message
 # instructing the switch to flood the packet
-# Note that (due to a bug?) OFPCML_NO_BUFFER option is ignored
-# in the default miss entry, so we set priority to 1
 
 class PsrHub(app_manager.RyuApp):
     OFP_VERSIONS = [ofproto_v1_3.OFP_VERSION]
@@ -27,7 +25,7 @@ class PsrHub(app_manager.RyuApp):
         actions = [
             parser.OFPActionOutput(
                 ofproto.OFPP_CONTROLLER,
-                ofproto.OFPCML_NO_BUFFER
+                128
             )
         ]
         inst = [
@@ -38,12 +36,11 @@ class PsrHub(app_manager.RyuApp):
         ]
         mod = parser.OFPFlowMod(
             datapath=datapath,
-            priority=1,
+            priority=0,
             match=match,
             instructions=inst
         )
         datapath.send_msg(mod)
-
 
     @set_ev_cls(ofp_event.EventOFPPacketIn, MAIN_DISPATCHER)
     def _packet_in_handler(self, ev):
@@ -59,12 +56,12 @@ class PsrHub(app_manager.RyuApp):
             )
         ]
 
-        assert msg.buffer_id == ofproto.OFP_NO_BUFFER
+        assert msg.buffer_id != ofproto.OFP_NO_BUFFER
 
         out = parser.OFPPacketOut(
             datapath=datapath,
             buffer_id=msg.buffer_id,
             in_port=in_port,
             actions=actions,
-            data=msg.data)
+            data=None)
         datapath.send_msg(out)

@@ -3,9 +3,12 @@ from ryu.controller import ofp_event
 from ryu.controller.handler import CONFIG_DISPATCHER, MAIN_DISPATCHER
 from ryu.controller.handler import set_ev_cls
 from ryu.ofproto import ofproto_v1_3
-from ryu.lib.packet import packet
-from ryu.lib.packet import ethernet
+from ryu.lib.packet import packet, ethernet
 
+# This implements a learning switch in the controller
+# The switch sends all packet to the controller
+# The controller implements the MAC table using a python dictionary
+# If the MAC dst is known, add rule to the switch
 class PsrSwitch(app_manager.RyuApp):
     OFP_VERSIONS = [ofproto_v1_3.OFP_VERSION]
 
@@ -21,19 +24,26 @@ class PsrSwitch(app_manager.RyuApp):
         parser = datapath.ofproto_parser
 
         self.mac_to_port.setdefault(datapath.id, {})
-
 		
-        # match all packets 
         match = parser.OFPMatch()
-        # send to controller
-        actions = [parser.OFPActionOutput(ofproto.OFPP_CONTROLLER,
-                                          ofproto.OFPCML_NO_BUFFER)]
-        priority = 0
-
-        inst = [parser.OFPInstructionActions(ofproto.OFPIT_APPLY_ACTIONS,
-                                             actions)]
-        mod = parser.OFPFlowMod(datapath=datapath, priority=priority,
-                                match=match, instructions=inst)
+        actions = [
+            parser.OFPActionOutput(
+                ofproto.OFPP_CONTROLLER,
+                128
+            )
+        ]
+        inst = [
+            parser.OFPInstructionActions(
+                ofproto.OFPIT_APPLY_ACTIONS,
+                actions
+           )
+        ]
+        mod = parser.OFPFlowMod(
+            datapath=datapath,
+            priority=0,
+            match=match,
+            instructions=inst
+        )
         datapath.send_msg(mod)
 
 
@@ -44,14 +54,15 @@ class PsrSwitch(app_manager.RyuApp):
         ofproto = datapath.ofproto
         parser = datapath.ofproto_parser
         in_port = msg.match['in_port']
+        dpid = datapath.id
 
         pkt = packet.Packet(msg.data)
-        eth = pkt.get_protocols(ethernet.ethernet)[0]
+        eth = pkt.get_protocol(ethernet.ethernet)
 
+        assert eth is not None
+        
         dst = eth.dst
         src = eth.src
-
-        dpid = datapath.id
 
         self.mac_to_port[dpid][src] = in_port
 
@@ -60,25 +71,42 @@ class PsrSwitch(app_manager.RyuApp):
         else:
             out_port = ofproto.OFPP_FLOOD
 
-        self.logger.info("packet in %s %s %s %s %s", dpid, src, dst, in_port, out_port)
+#        self.logger.info("packet in %s %s %s %s %s", dpid, src, dst, in_port, out_port)
 
-        actions = [parser.OFPActionOutput(out_port)]
-		
-        data = None
-        if msg.buffer_id == ofproto.OFP_NO_BUFFER:
-            data = msg.data
+        actions = [
+            parser.OFPActionOutput(out_port)
+        ]
 
-        out = parser.OFPPacketOut(datapath=datapath, buffer_id=msg.buffer_id,
-                                  in_port=in_port, actions=actions, data=data)
-        datapath.send_msg(out)
+        assert msg.buffer_id != ofproto.OFP_NO_BUFFER
 
-		# install a flow to avoid packet_in next time
         if out_port != ofproto.OFPP_FLOOD:
-            match = parser.OFPMatch(eth_src=src, eth_dst=dst)
+        	# install a flow and send the packet
+            match = parser.OFPMatch(
+                eth_src=src,
+                eth_dst=dst
+            )
+            inst = [
+                parser.OFPInstructionActions(
+                    ofproto.OFPIT_APPLY_ACTIONS,
+                    actions
+                )
+            ]
+            ofmsg = parser.OFPFlowMod(
+                datapath=datapath,
+                priority=1,
+                match=match,
+                instructions=inst,
+                buffer_id=msg.buffer_id
+            )
+        else:
+            # only send the packet
+            ofmsg = parser.OFPPacketOut(
+                datapath=datapath,
+                buffer_id=msg.buffer_id,
+                in_port=in_port,
+                actions=actions,
+                data=None
+            )
 
-            priority = 1
-            inst = [parser.OFPInstructionActions(ofproto.OFPIT_APPLY_ACTIONS,
-                                                 actions)]
-            mod = parser.OFPFlowMod(datapath=datapath, priority=priority,
-                                    match=match, instructions=inst)
-            datapath.send_msg(mod)
+        datapath.send_msg(ofmsg)
+        
