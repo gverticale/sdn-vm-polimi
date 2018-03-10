@@ -36,7 +36,7 @@ class PsrSwitch(app_manager.RyuApp):
             parser.OFPInstructionActions(
                 ofproto.OFPIT_APPLY_ACTIONS,
                 actions
-           )
+            )
         ]
         mod = parser.OFPFlowMod(
             datapath=datapath,
