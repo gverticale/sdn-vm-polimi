@@ -1,8 +1,6 @@
 sudo apt install -y openvswitch-switch
 
-git clone git://github.com/mininet/mininet
-pushd mininet
-git checkout
-popd
+mkdir mininet
+curl -L https://github.com/mininet/mininet/archive/master.tar.gz | tar xz -C mininet --strip=1
+
 mininet/util/install.sh -n
-# mininet/util/install.sh -nfv
