@@ -1,27 +1,27 @@
+# Implementazione openflow di un hub tramite controller
+#
+# In ogni switch viene caricata un'unica regola
+# di default (table miss) con azione di bufferizzazione
+# del pacchetto e invio al controller dell'intestazione
+# Il controller risponde con una  packet out con azione flood
+
 from ryu.base import app_manager
 from ryu.controller import ofp_event
 from ryu.controller.handler import CONFIG_DISPATCHER, MAIN_DISPATCHER
 from ryu.controller.handler import set_ev_cls
 from ryu.ofproto import ofproto_v1_3
 
-# This hub implementation sends packet headers to the controller
-# The controller echoes with a packet out message
-# instructing the switch to flood the packet
-
-class PsrHub(app_manager.RyuApp):
+class PolimiHub(app_manager.RyuApp):
     OFP_VERSIONS = [ofproto_v1_3.OFP_VERSION]
 
 
-    # execute at switch registration
     @set_ev_cls(ofp_event.EventOFPSwitchFeatures, CONFIG_DISPATCHER)
     def switch_features_handler(self, ev):
         datapath = ev.msg.datapath
         ofproto = datapath.ofproto
         parser = datapath.ofproto_parser
 
-        # match all packets 
         match = parser.OFPMatch()
-        # send to controller
         actions = [
             parser.OFPActionOutput(
                 ofproto.OFPP_CONTROLLER,
@@ -48,15 +48,18 @@ class PsrHub(app_manager.RyuApp):
         datapath = msg.datapath
         ofproto = datapath.ofproto
         parser = datapath.ofproto_parser
-        in_port = msg.match['in_port']
 
+        # Per come abbiamo scritto le regole nello switch
+        # i pacchetti devono essere bufferizzati allo switch
+        assert msg.buffer_id != ofproto.OFP_NO_BUFFER        
+
+        in_port = msg.match['in_port']     
+        
         actions = [
             parser.OFPActionOutput(
                 ofproto.OFPP_FLOOD
             )
         ]
-
-        assert msg.buffer_id != ofproto.OFP_NO_BUFFER
 
         out = parser.OFPPacketOut(
             datapath=datapath,

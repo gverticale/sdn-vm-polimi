@@ -1,29 +1,30 @@
+# Implementazione openflow di un hub tramite controller
+#
+# In ogni switch viene caricata un'unica regola
+# di default (table miss) con azione di invio al controller
+# dell'intero pacchetto. Il controller risponde con una
+# packet out con azione flood
+#
+# NOTA: OpenVSwitch ignora l'opzione OFPCML_NO_BUFFER
+# nelle regole table miss (priorita' 0); pertanto,
+# carichiamo una regola con priorita' 1 
+
 from ryu.base import app_manager
 from ryu.controller import ofp_event
 from ryu.controller.handler import CONFIG_DISPATCHER, MAIN_DISPATCHER
 from ryu.controller.handler import set_ev_cls
 from ryu.ofproto import ofproto_v1_3
 
-# This hub implementation sends all the packets to the controller
-# The controller echoes the packets with a packet out message
-# instructing the switch to flood the packet
-# Note that (due to a bug?) OFPCML_NO_BUFFER option is ignored
-# in the default miss entry, so we set priority to 1
-
-class PsrHub(app_manager.RyuApp):
+class PolimiHub(app_manager.RyuApp):
     OFP_VERSIONS = [ofproto_v1_3.OFP_VERSION]
 
-
-    # execute at switch registration
     @set_ev_cls(ofp_event.EventOFPSwitchFeatures, CONFIG_DISPATCHER)
     def switch_features_handler(self, ev):
         datapath = ev.msg.datapath
         ofproto = datapath.ofproto
         parser = datapath.ofproto_parser
 
-        # match all packets 
         match = parser.OFPMatch()
-        # send to controller
         actions = [
             parser.OFPActionOutput(
                 ofproto.OFPP_CONTROLLER,
@@ -44,13 +45,20 @@ class PsrHub(app_manager.RyuApp):
         )
         datapath.send_msg(mod)
 
-
+    # Registriamo un handler dell'evento Packet In
     @set_ev_cls(ofp_event.EventOFPPacketIn, MAIN_DISPATCHER)
     def _packet_in_handler(self, ev):
         msg = ev.msg
         datapath = msg.datapath
         ofproto = datapath.ofproto
         parser = datapath.ofproto_parser
+
+        # Per come abbiamo scritto le regole nello switch
+        # i pacchetti non devono essere bufferizzati allo switch
+        assert msg.buffer_id == ofproto.OFP_NO_BUFFER        
+        
+        # Recuperiamo dai metadati del pacchetto
+        # la porta di ingresso allo switch
         in_port = msg.match['in_port']
 
         actions = [
@@ -59,12 +67,11 @@ class PsrHub(app_manager.RyuApp):
             )
         ]
 
-        assert msg.buffer_id == ofproto.OFP_NO_BUFFER
-
         out = parser.OFPPacketOut(
             datapath=datapath,
             buffer_id=msg.buffer_id,
             in_port=in_port,
             actions=actions,
-            data=msg.data)
+            data=msg.data
+        )
         datapath.send_msg(out)

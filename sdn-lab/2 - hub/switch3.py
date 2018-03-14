@@ -79,7 +79,7 @@ class PsrSwitch(app_manager.RyuApp):
         
         src = eth.src
 
-        self.logger.info("packet in %s %s %s", dpid, src, in_port)
+#        self.logger.info("packet in %s %s %s", dpid, src, in_port)
         
         # add source address to table 0
         # to stop sending to the controller
