@@ -74,7 +74,7 @@ class PolimiSwitch(app_manager.RyuApp):
 
         host_list = get_all_host(self)
         for host in host_list:
-            if host.ipv4[0] == arp_in.dst_ip:
+            if arp_in.dst_ip in host.ipv4:
                 destination_host_mac = host.mac
                 break
 
