@@ -114,19 +114,9 @@ class PolimiSwitch(app_manager.RyuApp):
 
         pkt = packet.Packet(msg.data)
         eth = pkt.get_protocol(ethernet.ethernet)
-
-        # ignora LLDP
-        if eth.ethertype == ether_types.ETH_TYPE_LLDP:
-            # ignore lldp packet
-            return
-
-        # ignora ARP
-        if eth.ethertype == ether_types.ETH_TYPE_ARP:
-            # ignore lldp packet
-            return
-
-        # pacchetto IPv4
         pkt_ip = pkt.get_protocol(ipv4.ipv4)
+
+        # ignora pacchetti non IPv4 (es. ARP, LLDP)
         if pkt_ip is None:
             return
 
@@ -138,7 +128,7 @@ class PolimiSwitch(app_manager.RyuApp):
             # print "DP: ", datapath.id, "Host not found: ", pkt_ip.dst
             return
 
-        # da usare host direttamente collegato
+        # da usare se l'host e' direttamente collegato
         output_port = port_no
 
         # host non direttamente collegato
