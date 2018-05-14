@@ -5,7 +5,11 @@ from ryu.controller.handler import set_ev_cls
 from ryu.ofproto import ofproto_v1_3
 
 # Topologia di riferimento
-# sudo mn –mac –arp –topo linear,3 –switck ovsk,datapath=user –controller remote
+# sudo mn --mac --arp --topo linear,3 --switck ovsk,datapath=user --controller remote
+# --mac e --arp perche' non vogliamo gestire il broadcast
+# --switck ovsk,datapath=user perche' OpenVSwitch supporta MPLS solo in userspace
+#
+#
 #       s1 -- s2 -- s3
 #     /        |      \
 #    h1       h2       h3
@@ -17,7 +21,6 @@ from ryu.ofproto import ofproto_v1_3
 # ** 1000 => 1000, next-hop=s3
 # In s3 inserire regola:
 # ** destinazine 10.0.0.1/32 => push 1001, next-hop=s2
-
 
 class Mpls(app_manager.RyuApp):
     OFP_VERSIONS = [ofproto_v1_3.OFP_VERSION]
