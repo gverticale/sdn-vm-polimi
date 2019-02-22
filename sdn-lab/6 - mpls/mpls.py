@@ -5,7 +5,7 @@ from ryu.controller.handler import set_ev_cls
 from ryu.ofproto import ofproto_v1_3
 
 # Topologia di riferimento
-# sudo mn --mac --arp --topo linear,3 --switck ovsk,datapath=user --controller remote
+# sudo mn --mac --arp --topo linear,3 --switch ovsk,datapath=user --controller remote
 # --mac e --arp perche' non vogliamo gestire il broadcast
 # --switck ovsk,datapath=user perche' OpenVSwitch supporta MPLS solo in userspace
 #

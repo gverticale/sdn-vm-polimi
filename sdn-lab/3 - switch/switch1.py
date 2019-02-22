@@ -15,7 +15,7 @@ class PsrSwitch(app_manager.RyuApp):
     def __init__(self, *args, **kwargs):
         super(PsrSwitch, self).__init__(*args, **kwargs)
         self.mac_to_port = {}
-	
+
     # execute at switch registration
     @set_ev_cls(ofp_event.EventOFPSwitchFeatures, CONFIG_DISPATCHER)
     def switch_features_handler(self, ev):
@@ -24,8 +24,8 @@ class PsrSwitch(app_manager.RyuApp):
         parser = datapath.ofproto_parser
 
         self.mac_to_port.setdefault(datapath.id, {})
-		
-        # match all packets 
+
+        # match all packets
         match = parser.OFPMatch()
         # send to controller
         actions = [
@@ -62,7 +62,7 @@ class PsrSwitch(app_manager.RyuApp):
         eth = pkt.get_protocol(ethernet.ethernet)
 
         assert eth is not None
-        
+
         dst = eth.dst
         src = eth.src
 
@@ -73,14 +73,14 @@ class PsrSwitch(app_manager.RyuApp):
         else:
             out_port = ofproto.OFPP_FLOOD
 
-#        self.logger.info("packet in %s %s %s %s %s", dpid, src, dst, in_port, out_port)
+        self.logger.info("packet in %s %s %s %s %s %s", dpid, src, dst, in_port, out_port, msg.buffer_id)
 
         actions = [
             parser.OFPActionOutput(out_port)
         ]
 
         assert msg.buffer_id != ofproto.OFP_NO_BUFFER
-		
+
         out = parser.OFPPacketOut(
             datapath=datapath,
             buffer_id=msg.buffer_id,
@@ -89,4 +89,3 @@ class PsrSwitch(app_manager.RyuApp):
             data=None
         )
         datapath.send_msg(out)
-		
