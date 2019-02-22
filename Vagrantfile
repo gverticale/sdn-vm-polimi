@@ -6,7 +6,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
  config.vm.box = "ubuntu/xenial64"
  #config.vm.box = "ubuntu/bionic64"
- 
+
  ## Guest Config
  config.vm.hostname = "polimi-sdn"
 
@@ -14,13 +14,16 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
  config.vm.network "forwarded_port", guest:8181, host:8181
 
  # ryu gui
- config.vm.network "forwarded_port", guest:8080, host:8080 
+ config.vm.network "forwarded_port", guest:8080, host:8080
+
+ # mininet dashboard
+ config.vm.network "forwarded_port", guest:8008, host:8008
  
  #default ssh to 2222
  #config.ssh.guest_port = 22
- 
- ## Provisioning 
-   
+
+ ## Provisioning
+
  config.vm.provision "shell", path: "setup/basic-setup.sh"
  config.vm.provision "shell", privileged: false, path: "setup/mininet-setup.sh"
  config.vm.provision "shell", privileged: false, path: "setup/ryu-setup.sh"
@@ -29,6 +32,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
  # x11 not necessary
  # change to true if x11 is available
- config.ssh.forward_x11 = false
+ config.ssh.forward_x11 = true
 
 end
