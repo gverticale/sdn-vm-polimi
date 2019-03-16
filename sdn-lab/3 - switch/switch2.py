@@ -3,7 +3,7 @@ from ryu.controller import ofp_event
 from ryu.controller.handler import CONFIG_DISPATCHER, MAIN_DISPATCHER
 from ryu.controller.handler import set_ev_cls
 from ryu.ofproto import ofproto_v1_3
-from ryu.lib.packet import packet, ethernet
+from ryu.lib.packet import packet, ethernet, ether_types
 
 # This implements a learning switch in the controller
 # The switch sends all packets to the controller
@@ -15,7 +15,7 @@ class PsrSwitch(app_manager.RyuApp):
     def __init__(self, *args, **kwargs):
         super(PsrSwitch, self).__init__(*args, **kwargs)
         self.mac_to_port = {}
-	
+
     # execute at switch registration
     @set_ev_cls(ofp_event.EventOFPSwitchFeatures, CONFIG_DISPATCHER)
     def switch_features_handler(self, ev):
@@ -24,7 +24,7 @@ class PsrSwitch(app_manager.RyuApp):
         parser = datapath.ofproto_parser
 
         self.mac_to_port.setdefault(datapath.id, {})
-		
+
         match = parser.OFPMatch()
         actions = [
             parser.OFPActionOutput(
@@ -60,9 +60,12 @@ class PsrSwitch(app_manager.RyuApp):
         eth = pkt.get_protocol(ethernet.ethernet)
 
         assert eth is not None
-        
+
         dst = eth.dst
         src = eth.src
+
+        if eth.ethertype == ether_types.ETH_TYPE_LLDP:
+            return
 
         self.mac_to_port[dpid][src] = in_port
 
@@ -109,4 +112,3 @@ class PsrSwitch(app_manager.RyuApp):
             )
 
         datapath.send_msg(ofmsg)
-        

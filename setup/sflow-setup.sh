@@ -4,5 +4,5 @@ mkdir sflow-rt; curl -sL https://inmon.com/products/sFlow-RT/sflow-rt.tar.gz | t
 #tar -xvzf sflow-rt.tar.gz
 
 cd sflow-rt
-#./get-app.sh sflow-rt mininet-dashboard
+./get-app.sh sflow-rt mininet-dashboard
 # ./start.sh

@@ -3,7 +3,7 @@ from ryu.controller import ofp_event
 from ryu.controller.handler import CONFIG_DISPATCHER, MAIN_DISPATCHER
 from ryu.controller.handler import set_ev_cls
 from ryu.ofproto import ofproto_v1_3
-from ryu.lib.packet import packet, ethernet
+from ryu.lib.packet import packet, ethernet, ether_types
 
 # This implements a learning switch in the of switch
 # The switch uses two tables:
@@ -16,7 +16,7 @@ from ryu.lib.packet import packet, ethernet
 # Controller adds source mac to both tables
 class PsrSwitch(app_manager.RyuApp):
     OFP_VERSIONS = [ofproto_v1_3.OFP_VERSION]
-	
+
     # execute at switch registration
     @set_ev_cls(ofp_event.EventOFPSwitchFeatures, CONFIG_DISPATCHER)
     def switch_features_handler(self, ev):
@@ -76,11 +76,14 @@ class PsrSwitch(app_manager.RyuApp):
         eth = pkt.get_protocol(ethernet.ethernet)
 
         assert eth is not None
-        
+
+        if eth.ethertype == ether_types.ETH_TYPE_LLDP:
+            return
+
         src = eth.src
 
 #        self.logger.info("packet in %s %s %s", dpid, src, in_port)
-        
+
         # add source address to table 0
         # to stop sending to the controller
         match = parser.OFPMatch(eth_src=src)
@@ -101,7 +104,7 @@ class PsrSwitch(app_manager.RyuApp):
         match = parser.OFPMatch(eth_dst=src)
         actions = [
             parser.OFPActionOutput(in_port)
-        ]        
+        ]
         inst = [
             parser.OFPInstructionActions(
                 ofproto.OFPIT_APPLY_ACTIONS,
@@ -116,4 +119,3 @@ class PsrSwitch(app_manager.RyuApp):
             instructions=inst
         )
         datapath.send_msg(mod)
-        

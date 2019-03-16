@@ -3,7 +3,7 @@ from ryu.controller import ofp_event
 from ryu.controller.handler import CONFIG_DISPATCHER, MAIN_DISPATCHER
 from ryu.controller.handler import set_ev_cls
 from ryu.ofproto import ofproto_v1_3
-from ryu.lib.packet import packet, ethernet
+from ryu.lib.packet import packet, ethernet, ether_types
 
 # This implements a learning switch in the controller
 # The switch sends all packet to the controller
@@ -63,6 +63,9 @@ class PsrSwitch(app_manager.RyuApp):
 
         assert eth is not None
 
+        if eth.ethertype == ether_types.ETH_TYPE_LLDP:
+            return
+
         dst = eth.dst
         src = eth.src
 
@@ -73,7 +76,7 @@ class PsrSwitch(app_manager.RyuApp):
         else:
             out_port = ofproto.OFPP_FLOOD
 
-        self.logger.info("packet in %s %s %s %s %s %s", dpid, src, dst, in_port, out_port, msg.buffer_id)
+        # self.logger.info("packet in %s %s %s %s %s %s", dpid, src, dst, in_port, out_port, msg.buffer_id)
 
         actions = [
             parser.OFPActionOutput(out_port)
