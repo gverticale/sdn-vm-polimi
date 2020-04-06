@@ -36,7 +36,7 @@ class PolimiHub(app_manager.RyuApp):
         ]
         mod = parser.OFPFlowMod(
             datapath=datapath,
-            priority=0,
+            priority=1,
             match=match,
             instructions=inst
         )
