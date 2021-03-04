@@ -1,3 +1,4 @@
+sudo apt-get install -y default-jre-headless
 mkdir sflow-rt; curl -sL https://inmon.com/products/sFlow-RT/sflow-rt.tar.gz | tar xz -C sflow-rt --strip=1
 
 #wget https://inmon.com/products/sFlow-RT/sflow-rt.tar.gz
