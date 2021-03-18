@@ -23,7 +23,7 @@ class PsrSwitch(app_manager.RyuApp):
         ofproto = datapath.ofproto
         parser = datapath.ofproto_parser
 
-        self.mac_to_port.setdefault(datapath.id, {})
+        self.mac_to_port[datapath.id] = {}
 
         # match all packets
         match = parser.OFPMatch()
@@ -31,7 +31,7 @@ class PsrSwitch(app_manager.RyuApp):
         actions = [
             parser.OFPActionOutput(
                 ofproto.OFPP_CONTROLLER,
-                128
+                ofproto.OFPCML_NO_BUFFER
             )
         ]
         inst = [
@@ -42,7 +42,7 @@ class PsrSwitch(app_manager.RyuApp):
        ]
         mod = parser.OFPFlowMod(
             datapath=datapath,
-            priority=0,
+            priority=1,
             match=match,
             instructions=inst
         )
@@ -76,19 +76,19 @@ class PsrSwitch(app_manager.RyuApp):
         else:
             out_port = ofproto.OFPP_FLOOD
 
-        # self.logger.info("packet in %s %s %s %s %s %s", dpid, src, dst, in_port, out_port, msg.buffer_id)
+        self.logger.info("packet in %s %s -> %s, %s -> %s", dpid, src, dst, in_port, out_port)
 
         actions = [
             parser.OFPActionOutput(out_port)
         ]
 
-        assert msg.buffer_id != ofproto.OFP_NO_BUFFER
+        assert msg.buffer_id == ofproto.OFP_NO_BUFFER
 
         out = parser.OFPPacketOut(
             datapath=datapath,
             buffer_id=msg.buffer_id,
             in_port=in_port,
             actions=actions,
-            data=None
+            data=msg.data
         )
         datapath.send_msg(out)
