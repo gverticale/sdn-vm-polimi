@@ -55,7 +55,7 @@ class PolimiHub(app_manager.RyuApp):
 
         # Per come abbiamo scritto le regole nello switch
         # i pacchetti non devono essere bufferizzati allo switch
-        assert msg.buffer_id == ofproto.OFP_NO_BUFFER        
+        assert msg.buffer_id == ofproto.OFP_NO_BUFFER      
         
         # Recuperiamo dai metadati del pacchetto
         # la porta di ingresso allo switch
