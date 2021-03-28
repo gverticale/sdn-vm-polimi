@@ -28,7 +28,8 @@ class HopByHopSwitch(app_manager.RyuApp):
             parser.OFPInstructionActions(
                 ofproto.OFPIT_APPLY_ACTIONS,
                 [
-                    parser.OFPActionOutput(ofproto.OFPP_CONTROLLER,128)
+                    parser.OFPActionOutput(ofproto.OFPP_CONTROLLER,
+                                           ofproto.OFPCML_NO_BUFFER)
                 ]
             )
         ]
@@ -69,6 +70,7 @@ class HopByHopSwitch(app_manager.RyuApp):
         datapath = msg.datapath
         ofproto = datapath.ofproto
         parser = datapath.ofproto_parser
+        in_port = msg.match['in_port']
 
         pkt = packet.Packet(msg.data)
         eth = pkt.get_protocol(ethernet.ethernet)
@@ -100,6 +102,17 @@ class HopByHopSwitch(app_manager.RyuApp):
             output_port = self.find_next_hop_to_destination(datapath.id,dst_dpid)
 
         # print "DP: ", datapath.id, "Host: ", pkt_ip.dst, "Port: ", output_port
+
+        # inoltra il pacchetto corrente
+        actions = [ parser.OFPActionOutput(output_port) ]
+        out = parser.OFPPacketOut(
+            datapath=datapath,
+            buffer_id=msg.buffer_id,
+            in_port=in_port,
+            actions=actions,
+            data=msg.data
+        )
+        datapath.send_msg(out)
 
         # aggiungi la regola
         match = parser.OFPMatch(
