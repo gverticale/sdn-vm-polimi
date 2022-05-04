@@ -59,7 +59,7 @@ class PsrSwitch(app_manager.RyuApp):
         actions = [
             parser.OFPActionOutput(
                 ofproto.OFPP_CONTROLLER,
-                128
+                ofproto.OFPCML_NO_BUFFER
             )
         ]
         inst = [
@@ -107,8 +107,6 @@ class PsrSwitch(app_manager.RyuApp):
             parser.OFPActionOutput(out_port)
         ]
 
-        assert msg.buffer_id != ofproto.OFP_NO_BUFFER
-
         if out_port != ofproto.OFPP_FLOOD:
         	# install a flow and send the packet
             match = parser.OFPMatch(
@@ -125,18 +123,18 @@ class PsrSwitch(app_manager.RyuApp):
                 datapath=datapath,
                 priority=1,
                 match=match,
-                instructions=inst,
-                buffer_id=msg.buffer_id
+                instructions=inst
             )
-        else:
-            # only send the packet
-            ofmsg = parser.OFPPacketOut(
-                datapath=datapath,
-                buffer_id=msg.buffer_id,
-                in_port=in_port,
-                actions=actions,
-                data=None
-            )
+            datapath.send_msg(ofmsg)
+
+        # send the packet
+        ofmsg = parser.OFPPacketOut(
+            datapath=datapath,
+            buffer_id=msg.buffer_id,
+            in_port=in_port,
+            actions=actions,
+            data=msg.data
+        )
 
         datapath.send_msg(ofmsg)
             
