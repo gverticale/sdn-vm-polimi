@@ -1,5 +1,7 @@
 # Macchina virtuale per il corso di Software Defined Networking @ Politecnico di Milano
 
+Istruzioni per Windows, Linux e Mac con architettura amd64. Per Mac con architettura arm consultare questa pagina di istruzioni https://github.com/MrVideo/sdn-lab (courtesy of Mario Merlo)
+
 ## Requisiti:
 * Virtualbox (https://www.virtualbox.org)
 * Vagrant (https://www.vagrantup.com)
@@ -13,3 +15,4 @@
 5. Per collegarsi alla macchina virtuale `vagrant ssh`
 6. Il disco della macchina host è montato nella cartella `/vagrant`
 7. Per spegnere la macchina, uscire dalla macchina (`exit`) e fermarla (`vagrant halt`)
+
