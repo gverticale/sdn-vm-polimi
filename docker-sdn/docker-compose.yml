@@ -1,0 +1,11 @@
+version: '3'
+services:
+  sdn:
+    build:
+      context: .
+    image: sdn
+    tty: true
+    privileged: true
+    network_mode: "host"
+    volumes:
+     - /lib/modules:/lib/modules
