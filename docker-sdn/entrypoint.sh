@@ -3,6 +3,7 @@
 service openvswitch-switch start
 ovs-vsctl set-manager ptcp:6640
 
-bash
+# Execute any command passed to the entrypoint (e.g., "/bin/bash")
+exec "$@"
 
 service openvswitch-switch stop

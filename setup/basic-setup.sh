@@ -1,3 +1,5 @@
+#!/bin/bash
+
 apt update && apt upgrade -y
 export DEBIAN_FRONTEND=noninteractive
 apt-get install -y build-essential screen
