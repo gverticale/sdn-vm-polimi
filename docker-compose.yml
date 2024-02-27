@@ -1,0 +1,17 @@
+version: "3"
+services:
+  sdn-lab:
+    container_name: sdn
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    image: ghcr.io/gverticale/sdn-vm-polimi:latest
+    tty: true
+    privileged: true
+    network_mode: "host"
+    environment:
+      - DISPLAY=${DISPLAY_ENV}
+    volumes:
+      - ${X11_VOLUME}
+      - /lib/modules:/lib/modules
+      - ./sdn-lab:/root/sdn-labs
