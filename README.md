@@ -1,5 +1,7 @@
 # Macchina virtuale per il corso di Software Defined Networking @ Politecnico di Milano
 
+(work in progress)
+
 Istruzioni per Windows, Linux e Mac con architettura amd64. Per Mac con architettura arm consultare questa pagina di istruzioni https://github.com/MrVideo/sdn-lab (courtesy of Mario Merlo)
 
 ## Requisiti:
