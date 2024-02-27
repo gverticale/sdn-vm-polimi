@@ -1,5 +1,14 @@
 #!/bin/bash
 
+if command -v xhost &> /dev/null
+then
+    # xhost is available, execute it
+    xhost +local:*
+else
+    # xhost is not available, do not attempt to execute it
+    echo "xhost command is not available."
+fi
+
 # Detect the OS
 case "$(uname -s)" in
    Darwin)

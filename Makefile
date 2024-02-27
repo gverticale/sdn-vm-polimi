@@ -2,7 +2,6 @@
 SERVICE_NAME_LAB=sdn
 
 start-docker:
-	xhost +local:*
 	(. ./docker-sdn/setup-env.sh && docker compose up -d)
 
 stop-docker:
