@@ -8,7 +8,7 @@ Sono state fornite delle macchine virtuali con tutti i pacchetti necessari per s
 
 Per avviare le macchine virtuali, è necessario utilizzare un provider di virtualizzazione (es. Virtualbox o VMware) e seguire le istruzioni fornite insieme alle macchine virtuali.
 
-### Windows o MacOS with Intel/AMD CPU
+### Windows, Linux o MacOS with Intel/AMD CPU
 1. Installare [Virtualbox](https://www.virtualbox.org)
 2. Scaricare la macchina virtuale dal [questo](https://polimi365-my.sharepoint.com/:u:/g/personal/10457521_polimi_it/Eau_qEWlfzBPty42-mEHgAcByGq2rT139ZRKfg3ZK7eWQg?e=m6Rqvz) link.
     - Il link è accessibile solo agli studenti del Politecnico di Milano, previa autenticazione con le credenziali istituzionali.
@@ -25,13 +25,18 @@ Per avviare le macchine virtuali, è necessario utilizzare un provider di virtua
     ```bash
     $ git clone https://github.com/gverticale/sdn-vm-polimi.git
     ```
+    - Nel caso in cui la cartella sia gia' presente, e' possibile aggiornarla con il comando:
+        ```bash
+        $ cd sdn-vm-polimi
+        $ git pull
+        ```
 7. Entrare nella cartella ed avviare il docker con il comando:
     ```bash
     $ cd sdn-vm-polimi
     $ make connect-docker
     ```
 
-### MacOS with Apple M1/M2 CPU (ARM64)
+### MacOS with Apple Silicon (ARM64)
 1. Installare [VMware Fusion](https://www.vmware.com/products/fusion.html)
     - È necessario avere un account VMWare Customer Connect per procedere al download. È possibile iscriversi mediante l'indirizzo email del Politecnico o tramite quello personale: la licenza per VMWare Fusion Player è gratuita sia per scopi personali che per gli studenti.
 2. Scaricare la macchina virtuale dal [questo](https://polimi365-my.sharepoint.com/:u:/g/personal/10457521_polimi_it/EcFxgKNEHa9PoCUc_k7CUtwBCqA1ixcDVzptJFa2B0KB-g?e=A3W43Q) link.
@@ -47,6 +52,11 @@ Per avviare le macchine virtuali, è necessario utilizzare un provider di virtua
     ```bash
     $ git clone https://github.com/gverticale/sdn-vm-polimi.git
     ```
+    - Nel caso in cui la cartella sia gia' presente, e' possibile aggiornarla con il comando:
+        ```bash
+        $ cd sdn-vm-polimi
+        $ git pull
+        ```
 7. Entrare nella cartella ed avviare il docker con il comando:
     ```bash
     $ cd sdn-vm-polimi
