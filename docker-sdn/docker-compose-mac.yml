@@ -13,7 +13,7 @@ services:
     volumes:
       - ${X11_VOLUME}
       - /lib/modules:/lib/modules
-      - ./sdn-lab:/root/sdn-labs
+      - ../sdn-lab:/root/sdn-labs
     ports:
       - "6633:6633"
       - "6653:6653"

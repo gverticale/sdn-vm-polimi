@@ -14,4 +14,4 @@ services:
     volumes:
       - ${X11_VOLUME}
       - /lib/modules:/lib/modules
-      - ./sdn-lab:/root/sdn-labs
+      - ../sdn-lab:/root/sdn-labs
