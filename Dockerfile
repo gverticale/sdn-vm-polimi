@@ -20,7 +20,7 @@ RUN apt-get -y install sudo vim x11-xserver-utils xterm wireshark-qt wget
 RUN apt-get update && apt-get install -y --no-install-recommends python-tk
 
 RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates
-RUN apt-get update && apt-get install -y --no-install-recommends git
+RUN apt-get update && apt-get install -y --no-install-recommends git netcat
 
 # basic-startup.sh
 COPY setup/basic-setup.sh basic-setup.sh
