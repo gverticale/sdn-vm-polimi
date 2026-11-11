@@ -10,7 +10,7 @@ Per avviare le macchine virtuali, è necessario utilizzare un provider di virtua
 
 ### Windows, Linux o MacOS with Intel/AMD CPU
 1. Installare [Virtualbox](https://www.virtualbox.org)
-2. Scaricare la macchina virtuale dal [questo](https://polimi365-my.sharepoint.com/:u:/g/personal/10457521_polimi_it/Eau_qEWlfzBPty42-mEHgAcByGq2rT139ZRKfg3ZK7eWQg?e=m6Rqvz) link.
+2. Scaricare la macchina virtuale dal [questo](https://polimi365-my.sharepoint.com/:u:/g/personal/10524482_polimi_it/IQA_O2XzjsN9S5JOAS-nG2LcAUlboUspxLJKb3glyDErICI?e=X7aCPM) link.
     - Il link è accessibile solo agli studenti del Politecnico di Milano, previa autenticazione con le credenziali istituzionali.
     - Se si vuole verificare che il file scaricato sia corretto, verificando l'hash direttamente cosi:
         ```bash
