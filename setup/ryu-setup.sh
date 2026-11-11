@@ -11,6 +11,8 @@ mkdir -p ryu
 curl -sL "https://github.com/faucetsdn/ryu/archive/${RYU_VERSION}.tar.gz" | tar xz -C ryu --strip=1
 cd ryu
 pip3 install .
+# Fix compatibility with Python 3.10 on Ubuntu 22.04
+pip3 install --upgrade "eventlet==0.33.3" "dnspython==2.2.1"
 cd ..
 
 # Use the FLOW_MANAGER_VERSION from the environment variable if set, otherwise use the default value
