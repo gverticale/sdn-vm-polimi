@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM ubuntu:20.04
+FROM ubuntu:22.04
 
 ARG DEBIAN_FRONTEND=noninteractive
 ARG MININET_VERSION=6eb8973c0bfd13c25c244a3871130c5e36b5fbd7
@@ -16,7 +16,7 @@ WORKDIR /root
 COPY .Xresources /root/
 
 RUN apt update && apt upgrade -y
-RUN apt-get -y install sudo vim x11-xserver-utils xterm wireshark-qt wget
+RUN apt-get update && apt-get -y install sudo vim x11-xserver-utils xterm wireshark-qt wget
 RUN apt-get update && apt-get install -y --no-install-recommends python-tk
 
 RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates
@@ -25,7 +25,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends git netcat
 # basic-startup.sh
 COPY setup/basic-setup.sh basic-setup.sh
 RUN chmod +x ./basic-setup.sh
-RUN ./basic-setup.sh
+RUN bash ./basic-setup.sh
 RUN rm basic-setup.sh
 
 RUN apt-get install -y iproute2 iputils-ping net-tools openvswitch-testcontroller
